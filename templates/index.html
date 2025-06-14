@@ -73,6 +73,16 @@
                     <div class="progress-bar">
                         <div class="progress" style="width: ${percentage}%; background-color: ${color}"></div>
                     </div>
+                    <div class="keywords-section">
+                        <div class="missing-keywords">
+                            <h3>Missing Keywords:</h3>
+                            <p>${result.missing_keywords.join(', ') || 'None'}</p>
+                        </div>
+                        <div class="suggested-keywords">
+                            <h3>Suggested Keywords:</h3>
+                            <p>${result.suggested_keywords.join(', ')}</p>
+                        </div>
+                    </div>
                 `;
                 
                 container.appendChild(resultElement);
