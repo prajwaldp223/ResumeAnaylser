@@ -304,14 +304,17 @@ button:hover {
     font-weight: 600;
     margin-right: 0.5rem;
 }
-    box-shadow: 0 4px 12px rgba(72, 187, 120, 0.25);
+
+.entities-info ul {
+    list-style-position: inside;
+    color: #4a5568;
 }
 
 @media (max-width: 768px) {
     body {
         padding: 1.5rem 1rem;
     }
-    
+
     .container {
         padding: 1.5rem;
     }
