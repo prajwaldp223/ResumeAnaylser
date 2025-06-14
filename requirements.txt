@@ -1,6 +1,9 @@
 flask==2.0.1
-werkzeug==2.0.3
+werkzeug==2.2.2
 PyPDF2==3.0.1
+numpy==1.22.4
 scikit-learn==1.0.2
-numpy
-scipy
+reportlab==3.6.8
+spacy==3.5.0
+python-docx==0.8.11
+importlib-metadata==4.13.0

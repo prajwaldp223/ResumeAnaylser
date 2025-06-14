@@ -53,6 +53,43 @@
             }
         });
 
+        async function optimizeResume(filename, jobDescription) {
+            const formData = new FormData();
+            formData.append('job_description', jobDescription);
+            
+            // Get the file from the input element
+            const files = document.getElementById('resumes').files;
+            const file = Array.from(files).find(f => f.name === filename);
+            if (!file) return;
+            
+            formData.append('resume', file);
+
+            try {
+                const response = await fetch('/optimize', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    // Create a blob from the PDF stream
+                    const blob = await response.blob();
+                    // Create a link to download the file
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'optimized_' + filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    a.remove();
+                } else {
+                    console.error('Error optimizing resume');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
         function displayResults(results) {
             const container = document.getElementById('resultsContainer');
             container.innerHTML = '';
@@ -73,6 +110,51 @@
                     <div class="progress-bar">
                         <div class="progress" style="width: ${percentage}%; background-color: ${color}"></div>
                     </div>
+                    <div class="parsed-details">
+                        <h3>Resume Details:</h3>
+                        <div class="personal-info">
+                            <p><strong>Name:</strong> ${result.personal_details?.name || 'Not found'}</p>
+                            <p><strong>Email:</strong> ${result.personal_details?.email || 'Not found'}</p>
+                            <p><strong>Phone:</strong> ${result.personal_details?.phone || 'Not found'}</p>
+                            <p><strong>Links:</strong> ${result.personal_details?.links?.join(', ') || 'Not found'}</p>
+                        </div>
+                        <div class="sections-info">
+                            <div class="section-item">
+                                <h4>Education</h4>
+                                <ul>
+                                    ${result.sections?.education?.map(edu => `<li>${edu}</li>`).join('') || '<li>Not found</li>'}
+                                </ul>
+                            </div>
+                            <div class="section-item">
+                                <h4>Work Experience</h4>
+                                <ul>
+                                    ${result.sections?.experience?.map(exp => `<li>${exp}</li>`).join('') || '<li>Not found</li>'}
+                                </ul>
+                            </div>
+                            <div class="section-item">
+                                <h4>Skills</h4>
+                                <p>${result.sections?.skills?.join(', ') || 'Not found'}</p>
+                            </div>
+                            <div class="section-item">
+                                <h4>Projects</h4>
+                                <ul>
+                                    ${result.sections?.projects?.map(proj => `<li>${proj}</li>`).join('') || '<li>Not found</li>'}
+                                </ul>
+                            </div>
+                            <div class="section-item">
+                                <h4>Certifications</h4>
+                                <ul>
+                                    ${result.sections?.certifications?.map(cert => `<li>${cert}</li>`).join('') || '<li>Not found</li>'}
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="entities-info">
+                            <h4>Extracted Entities:</h4>
+                            <p><strong>Organizations:</strong> ${result.entities?.organizations?.join(', ') || 'None'}</p>
+                            <p><strong>Locations:</strong> ${result.entities?.locations?.join(', ') || 'None'}</p>
+                            <p><strong>Dates:</strong> ${result.entities?.dates?.join(', ') || 'None'}</p>
+                        </div>
+                    </div>
                     <div class="keywords-section">
                         <div class="missing-keywords">
                             <h3>Missing Keywords:</h3>
@@ -82,6 +164,9 @@
                             <h3>Suggested Keywords:</h3>
                             <p>${result.suggested_keywords.join(', ')}</p>
                         </div>
+                        <button onclick="optimizeResume('${result.filename}', document.getElementById('job_description').value)" class="optimize-button">
+                            Optimize Resume
+                        </button>
                     </div>
                 `;
                 
